@@ -6,11 +6,13 @@ import { Input } from './ui/input';
 import { Card } from './ui/card';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
+import { useEmojiStore } from '../lib/emojiStore';
 
 export default function EmojiGenerator() {
   const [prompt, setPrompt] = useState('');
   const [generatedEmoji, setGeneratedEmoji] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const addEmoji = useEmojiStore((state) => state.addEmoji);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ export default function EmojiGenerator() {
       });
       const data = await response.json();
       setGeneratedEmoji(data.emoji);
+      addEmoji(data.emoji); // Add the new emoji to the store
     } catch (error) {
       console.error('Error generating emoji:', error);
     } finally {

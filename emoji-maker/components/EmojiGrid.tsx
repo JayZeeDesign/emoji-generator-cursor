@@ -1,28 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEmojiStore } from '../lib/emojiStore';
 import Image from 'next/image';
 import { Card } from './ui/card';
 import { Download, Heart } from 'lucide-react';
 
-interface Emoji {
-  id: string;
-  url: string;
-  likes: number;
-}
-
 export default function EmojiGrid() {
-  const [emojis, setEmojis] = useState<Emoji[]>([]);
-
-  useEffect(() => {
-    // TODO: Fetch emojis from the backend
-    // For now, we'll use dummy data
-    setEmojis([
-      { id: '1', url: '/path/to/emoji1.png', likes: 5 },
-      { id: '2', url: '/path/to/emoji2.png', likes: 3 },
-      // Add more dummy emojis
-    ]);
-  }, []);
+  const emojis = useEmojiStore((state) => state.emojis);
 
   const handleDownload = (url: string) => {
     // TODO: Implement download functionality
