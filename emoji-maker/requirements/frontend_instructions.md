@@ -39,7 +39,8 @@ const output = await replicate.run(
 );
 console.log(output);
 
-# Current File structure
+
+# Current File structure (you HAVE TO follow structure below)
 
 EMOJI-GENERATOR-CURSOR
 └── emoji-maker
@@ -70,3 +71,7 @@ EMOJI-GENERATOR-CURSOR
     ├── tsconfig.json
     ├── yarn.lock
     └── .gitattributes
+
+# Rules
+- All new components should go in emoji-maker/components and be named like example-component.tsx unless otherwise specified
+- All new pages go in emoji-maker/app
