@@ -6,16 +6,27 @@ import { Card } from './ui/card';
 import { Download, Heart } from 'lucide-react';
 
 export default function EmojiGrid() {
-  const emojis = useEmojiStore((state) => state.emojis);
+  const { emojis, likeEmoji } = useEmojiStore();
 
-  const handleDownload = (url: string) => {
-    // TODO: Implement download functionality
-    console.log('Downloading:', url);
+  const handleDownload = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'emoji.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error downloading emoji:', error);
+    }
   };
 
   const handleLike = (id: string) => {
-    // TODO: Implement like functionality
-    console.log('Liking:', id);
+    likeEmoji(id);
   };
 
   return (
@@ -28,7 +39,7 @@ export default function EmojiGrid() {
               <Download size={20} />
             </button>
             <button onClick={() => handleLike(emoji.id)} className="p-2 bg-white rounded-full">
-              <Heart size={20} />
+              <Heart size={20} fill={emoji.likedByUser ? 'red' : 'none'} color={emoji.likedByUser ? 'red' : 'black'} />
             </button>
           </div>
           <p className="text-center mt-2">{emoji.likes} likes</p>
