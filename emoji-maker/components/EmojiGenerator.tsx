@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
@@ -10,26 +11,36 @@ import { useEmojiStore } from '../lib/emojiStore';
 
 export default function EmojiGenerator() {
   const [prompt, setPrompt] = useState('');
-  const [generatedEmoji, setGeneratedEmoji] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const addEmoji = useEmojiStore((state) => state.addEmoji);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { isSignedIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (!isSignedIn) {
+      // Handle not signed in state (e.g., show a message or redirect to sign in)
+      return;
+    }
+    setIsGenerating(true);
     try {
       const response = await fetch('/api/generate-emoji', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ prompt }),
       });
       const data = await response.json();
-      setGeneratedEmoji(data.emoji);
-      addEmoji(data.emoji); // Add the new emoji to the store
+      if (data.success) {
+        // Handle successful emoji generation (e.g., display the new emoji, update the grid)
+        console.log('Emoji generated:', data.emoji);
+      } else {
+        throw new Error(data.error || 'Failed to generate emoji');
+      }
     } catch (error) {
       console.error('Error generating emoji:', error);
+      // Handle error (e.g., show error message to user)
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
@@ -40,23 +51,17 @@ export default function EmojiGenerator() {
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter a prompt for your emoji"
+          placeholder="Enter emoji prompt"
+          disabled={isGenerating}
           className="w-full"
         />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            'Generate Emoji'
-          )}
+        <Button type="submit" disabled={isGenerating}>
+          {isGenerating ? 'Generating...' : 'Generate Emoji'}
         </Button>
       </form>
-      {generatedEmoji && (
+      {isGenerating && (
         <div className="mt-4 flex justify-center">
-          <Image src={generatedEmoji} alt="Generated Emoji" width={256} height={256} />
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         </div>
       )}
     </Card>
