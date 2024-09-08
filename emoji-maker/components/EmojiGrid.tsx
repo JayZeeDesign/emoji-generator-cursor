@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Card } from './ui/card';
 import { useEmojiStore } from '../lib/emojiStore';
@@ -32,7 +32,7 @@ export default function EmojiGrid() {
     }
   }, [newEmoji]);
 
-  const fetchEmojis = async () => {
+  const fetchEmojis = useCallback(async () => {
     try {
       const response = await fetch('/api/emojis');
       const data = await response.json();
@@ -56,7 +56,11 @@ export default function EmojiGrid() {
     } catch (error) {
       console.error('Error fetching emojis:', error);
     }
-  };
+  }, [isSignedIn, userId]);
+  
+  useEffect(() => {
+    fetchEmojis().catch(error => console.error('Error in fetchEmojis:', error));
+  }, [fetchEmojis]);
 
   const handleDownload = (imageUrl: string, prompt: string) => {
     fetch(imageUrl)
