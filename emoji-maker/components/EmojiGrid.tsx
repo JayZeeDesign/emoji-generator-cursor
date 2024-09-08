@@ -23,8 +23,8 @@ export default function EmojiGrid() {
   const { isSignedIn, userId } = useAuth();
 
   useEffect(() => {
-    fetchEmojis().catch(error => console.error('Error in fetchEmojis:', error));
-  }, []);
+    fetchEmojis();
+  }, [fetchEmojis]);
 
   useEffect(() => {
     if (newEmoji) {
@@ -41,7 +41,7 @@ export default function EmojiGrid() {
         if (isSignedIn && userId) {
           const likesResponse = await fetch(`/api/user-likes?userId=${userId}`);
           const likesData = await likesResponse.json();
-          const likedEmojiIds = new Set(likesData.likes.map((like: any) => like.emoji_id));
+          const likedEmojiIds = new Set(likesData.likes.map((like: { emoji_id: number }) => like.emoji_id));
           
           setEmojis(data.emojis.map((emoji: Emoji) => ({
             ...emoji,
