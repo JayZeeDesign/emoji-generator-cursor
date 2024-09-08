@@ -42,36 +42,35 @@ console.log(output);
 
 # Current File structure (you HAVE TO follow structure below)
 
-EMOJI-GENERATOR-CURSOR
-└── emoji-maker
-    ├── .next
-    ├── app
-    │   ├── fonts
-    │   ├── favicon.ico
-    │   ├── globals.css
-    │   ├── layout.tsx
-    │   └── page.tsx
-    ├── components
-    │   └── ui
-    │       ├── button.tsx
-    │       ├── card.tsx
-    │       └── input.tsx
-    ├── lib
-    ├── node_modules
-    ├── requirements
-    ├── .eslintrc.json
-    ├── .gitignore
-    ├── components.json
-    ├── next-env.d.ts
-    ├── next.config.mjs
-    ├── package.json
-    ├── postcss.config.mjs
-    ├── README.md
-    ├── tailwind.config.ts
-    ├── tsconfig.json
-    ├── yarn.lock
-    └── .gitattributes
+EMOJI-MAKER
+  ├── .next
+  ├── app
+  │   ├── fonts
+  │   ├── favicon.ico
+  │   ├── globals.css
+  │   ├── layout.tsx
+  │   └── page.tsx
+  ├── components
+  │   └── ui
+  │       ├── button.tsx
+  │       ├── card.tsx
+  │       └── input.tsx
+  ├── lib
+  ├── node_modules
+  ├── requirements
+  ├── .eslintrc.json
+  ├── .gitignore
+  ├── components.json
+  ├── next-env.d.ts
+  ├── next.config.mjs
+  ├── package.json
+  ├── postcss.config.mjs
+  ├── README.md
+  ├── tailwind.config.ts
+  ├── tsconfig.json
+  ├── yarn.lock
+  └── .gitattributes
 
 # Rules
-- All new components should go in emoji-maker/components and be named like example-component.tsx unless otherwise specified
-- All new pages go in emoji-maker/app
+- All new components should go in components and be named like example-component.tsx unless otherwise specified
+- All new pages go in app
