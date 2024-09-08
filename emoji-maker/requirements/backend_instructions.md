@@ -30,7 +30,8 @@ TABLE profiles (
 
 # Requirements
 1. Create user to user table
-   1. After a user signin via clerk, we should get the userId from clerk, and check if this userId exist in 'profiles' table, matching "user_id"
+   0. Clerk is already setup, dont need to worry about it
+   1. After a user signin via clerk successfully, we should get the userId from clerk, and check if userId exist in 'profiles' table, matching "user_id" (Only do this if user signin successfully)
    2. if the user doesnt exist, then create a user in 'profiles' table
    3. if the user exist already, then proceed, and pass on user_id to functions like generate emojis
 2. Upload emoji to "emojis" supabase storage bucket;
@@ -42,7 +43,6 @@ TABLE profiles (
 4. Likes interaction
    1. When user check on 'like' button, the num_likes should increase on the 'emojis' table
    2. when user un-check 'like' button, the num_likes should decrease on the 'emojis' table
-
 
 
 # Documentations
