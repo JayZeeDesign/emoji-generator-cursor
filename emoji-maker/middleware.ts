@@ -8,7 +8,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     // If the user isn't signed in and the route is private, redirect to sign-in
     if (!userId && isProtectedRoute(req)) {
-        return redirectToSignIn({ returnBackUrl: "/" });
+        return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
     // If the user is logged in and the route is protected, let them view.
