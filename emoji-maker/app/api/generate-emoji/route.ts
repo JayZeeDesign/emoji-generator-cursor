@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import Replicate from "replicate";
 
 // Add this type definition at the top of the file
-type ReplicateOutput = string[] | { [key: string]: any };
+type ReplicateOutput = string[] | Record<string, unknown>;
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
