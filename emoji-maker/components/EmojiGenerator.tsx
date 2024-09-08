@@ -5,7 +5,6 @@ import { useAuth } from '@clerk/nextjs';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
-import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { useEmojiStore } from '../lib/emojiStore';
 

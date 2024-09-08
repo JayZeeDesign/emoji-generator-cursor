@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
     // Upload to Supabase Storage
     const fileName = `${userId}_${Date.now()}.png`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('emojis')
       .upload(fileName, buffer, {
         contentType: 'image/png',
