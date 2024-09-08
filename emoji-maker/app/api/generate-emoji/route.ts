@@ -106,3 +106,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to generate or upload emoji', details: errorMessage }, { status: 500 });
   }
 }
+
+export const config = {
+  maxDuration: 300, // 5 minutes
+};
