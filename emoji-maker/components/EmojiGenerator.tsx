@@ -13,11 +13,12 @@ export default function EmojiGenerator() {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const { isSignedIn } = useAuth();
+  const addNewEmoji = useEmojiStore((state) => state.addNewEmoji);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn) {
-      // Handle not signed in state (e.g., show a message or redirect to sign in)
+      // Handle not signed in state
       return;
     }
     setIsGenerating(true);
@@ -31,8 +32,8 @@ export default function EmojiGenerator() {
       });
       const data = await response.json();
       if (data.success) {
-        // Handle successful emoji generation (e.g., display the new emoji, update the grid)
-        console.log('Emoji generated:', data.emoji);
+        addNewEmoji(data.emoji);
+        setPrompt('');
       } else {
         throw new Error(data.error || 'Failed to generate emoji');
       }
