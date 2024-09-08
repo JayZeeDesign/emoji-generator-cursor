@@ -16,12 +16,15 @@ export default function EmojiGenerator() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting emoji generation form');
     if (!isSignedIn) {
+      console.log('User not signed in');
       // Handle not signed in state
       return;
     }
     setIsGenerating(true);
     try {
+      console.log('Sending request to generate emoji');
       const response = await fetch('/api/generate-emoji', {
         method: 'POST',
         headers: {
@@ -30,7 +33,9 @@ export default function EmojiGenerator() {
         body: JSON.stringify({ prompt }),
       });
       const data = await response.json();
+      console.log('Received response:', data);
       if (data.success) {
+        console.log('Emoji generated successfully');
         addNewEmoji(data.emoji);
         setPrompt('');
       } else {
