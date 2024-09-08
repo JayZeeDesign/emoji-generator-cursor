@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import { auth } from '@clerk/nextjs/server';
 import Replicate from "replicate";
 
+// Add this type definition at the top of the file
+type ReplicateOutput = string[] | { [key: string]: any };
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -26,25 +29,13 @@ export async function POST(request: Request) {
       "fofr/sdxl-emoji:dee76b5afde21b0f01ed7925f0665b7e879c50ee718c5f78a9d38e04d523cc5e",
       {
         input: {
-          prompt: "A TOK emoji of " + prompt,
-          width: 1024,
-          height: 1024,
-          refine: "no_refiner",
-          scheduler: "K_EULER",
-          lora_scale: 0.6,
-          num_outputs: 1,
-          guidance_scale: 7.5,
-          apply_watermark: false,
-          high_noise_frac: 0.8,
-          negative_prompt: "",
-          prompt_strength: 0.8,
-          num_inference_steps: 50
+          prompt: prompt
         }
       }
-    );
+    ) as ReplicateOutput;
 
-    if (!output || typeof output[0] !== 'string') {
-      throw new Error('Failed to generate emoji');
+    if (!Array.isArray(output) || typeof output[0] !== 'string') {
+      throw new Error('Failed to generate emoji: Unexpected output format');
     }
 
     const imageUrl = output[0];
