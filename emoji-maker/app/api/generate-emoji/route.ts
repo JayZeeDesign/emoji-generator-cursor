@@ -107,6 +107,5 @@ export async function POST(request: Request) {
   }
 }
 
-export const config = {
-  maxDuration: 300, // 5 minutes
-};
+export const runtime = 'edge';
+export const maxDuration = 300; // 5 minutes
