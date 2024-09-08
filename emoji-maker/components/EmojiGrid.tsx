@@ -6,6 +6,7 @@ import { Card } from './ui/card';
 import { useEmojiStore } from '../lib/emojiStore';
 import { Download, Heart } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '@clerk/nextjs';
 
 interface Emoji {
   id: number;
@@ -13,11 +14,13 @@ interface Emoji {
   prompt: string;
   likes_count: number;
   creator_user_id: string;
+  isLiked?: boolean;
 }
 
 export default function EmojiGrid() {
   const [emojis, setEmojis] = useState<Emoji[]>([]);
   const newEmoji = useEmojiStore((state) => state.newEmoji);
+  const { isSignedIn, userId } = useAuth();
 
   useEffect(() => {
     fetchEmojis().catch(error => console.error('Error in fetchEmojis:', error));
@@ -25,7 +28,7 @@ export default function EmojiGrid() {
 
   useEffect(() => {
     if (newEmoji) {
-      setEmojis((prevEmojis) => [newEmoji, ...prevEmojis]);
+      setEmojis((prevEmojis) => [{ ...newEmoji, isLiked: false }, ...prevEmojis]);
     }
   }, [newEmoji]);
 
@@ -34,7 +37,19 @@ export default function EmojiGrid() {
       const response = await fetch('/api/emojis');
       const data = await response.json();
       if (Array.isArray(data.emojis)) {
-        setEmojis(data.emojis);
+        // If user is signed in, fetch their likes
+        if (isSignedIn && userId) {
+          const likesResponse = await fetch(`/api/user-likes?userId=${userId}`);
+          const likesData = await likesResponse.json();
+          const likedEmojiIds = new Set(likesData.likes.map((like: any) => like.emoji_id));
+          
+          setEmojis(data.emojis.map((emoji: Emoji) => ({
+            ...emoji,
+            isLiked: likedEmojiIds.has(emoji.id)
+          })));
+        } else {
+          setEmojis(data.emojis.map((emoji: Emoji) => ({ ...emoji, isLiked: false })));
+        }
       } else {
         console.error('Unexpected data shape:', data);
       }
@@ -59,9 +74,41 @@ export default function EmojiGrid() {
       .catch(error => console.error('Error downloading image:', error));
   };
 
-  const handleLike = (emojiId: number) => {
-    // Implement like functionality here
-    console.log('Like clicked for emoji:', emojiId);
+  const handleLike = async (emojiId: number) => {
+    if (!isSignedIn) {
+      // Handle not signed in state (e.g., show a message or redirect to sign in)
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/like-emoji', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ emojiId }),
+      });
+      const data = await response.json();
+      console.log('Received data from like-emoji:', data);
+      if (data.success) {
+        setEmojis(prevEmojis =>
+          prevEmojis.map(emoji =>
+            emoji.id === emojiId
+              ? { 
+                  ...emoji, 
+                  likes_count: data.likes_count,
+                  isLiked: data.action === 'liked'
+                }
+              : emoji
+          )
+        );
+        console.log('Updated emojis:', emojis); // Add this line
+      } else {
+        throw new Error(data.error || 'Failed to update likes');
+      }
+    } catch (error) {
+      console.error('Error updating likes:', error);
+    }
   };
 
   return (
@@ -89,9 +136,9 @@ export default function EmojiGrid() {
                 variant="ghost"
                 size="icon"
                 onClick={() => handleLike(emoji.id)}
-                className="text-white"
+                className={`text-white ${emoji.isLiked ? 'bg-red-500' : ''}`}
               >
-                <Heart size={20} />
+                <Heart size={20} fill={emoji.isLiked ? 'currentColor' : 'none'} />
               </Button>
             </div>
           </div>
