@@ -22,16 +22,6 @@ export default function EmojiGrid() {
   const newEmoji = useEmojiStore((state) => state.newEmoji);
   const { isSignedIn, userId } = useAuth();
 
-  useEffect(() => {
-    fetchEmojis();
-  }, [fetchEmojis]);
-
-  useEffect(() => {
-    if (newEmoji) {
-      setEmojis((prevEmojis) => [{ ...newEmoji, isLiked: false }, ...prevEmojis]);
-    }
-  }, [newEmoji]);
-
   const fetchEmojis = useCallback(async () => {
     try {
       const response = await fetch('/api/emojis');
@@ -57,10 +47,16 @@ export default function EmojiGrid() {
       console.error('Error fetching emojis:', error);
     }
   }, [isSignedIn, userId]);
-  
+
   useEffect(() => {
-    fetchEmojis().catch(error => console.error('Error in fetchEmojis:', error));
+    fetchEmojis();
   }, [fetchEmojis]);
+
+  useEffect(() => {
+    if (newEmoji) {
+      setEmojis((prevEmojis) => [{ ...newEmoji, isLiked: false }, ...prevEmojis]);
+    }
+  }, [newEmoji]);
 
   const handleDownload = (imageUrl: string, prompt: string) => {
     fetch(imageUrl)
