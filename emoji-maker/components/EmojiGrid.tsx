@@ -23,16 +23,18 @@ export default function EmojiGrid() {
   const { isSignedIn, userId } = useAuth();
 
   const fetchEmojis = useCallback(async () => {
+    console.log('Fetching emojis');
     try {
-      // Add a timestamp as a query parameter
       const timestamp = new Date().getTime();
       const response = await fetch(`/api/emojis?t=${timestamp}`);
       const data = await response.json();
+      console.log('Fetched emojis:', data);
       if (Array.isArray(data.emojis)) {
-        // If user is signed in, fetch their likes
         if (isSignedIn && userId) {
+          console.log('Fetching user likes');
           const likesResponse = await fetch(`/api/user-likes?userId=${userId}&t=${timestamp}`);
           const likesData = await likesResponse.json();
+          console.log('User likes:', likesData);
           const likedEmojiIds = new Set(likesData.likes.map((like: { emoji_id: number }) => like.emoji_id));
           
           setEmojis(data.emojis.map((emoji: Emoji) => ({
@@ -42,6 +44,7 @@ export default function EmojiGrid() {
         } else {
           setEmojis(data.emojis.map((emoji: Emoji) => ({ ...emoji, isLiked: false })));
         }
+        console.log('Updated emojis state:', emojis);
       } else {
         console.error('Unexpected data shape:', data);
       }
@@ -78,11 +81,12 @@ export default function EmojiGrid() {
 
   const handleLike = async (emojiId: number) => {
     if (!isSignedIn) {
-      // Handle not signed in state (e.g., show a message or redirect to sign in)
+      console.log('User not signed in, cannot like emoji');
       return;
     }
 
     try {
+      console.log('Sending like request for emoji:', emojiId);
       const response = await fetch('/api/like-emoji', {
         method: 'POST',
         headers: {
@@ -104,7 +108,7 @@ export default function EmojiGrid() {
               : emoji
           )
         );
-        console.log('Updated emojis:', emojis); // Add this line
+        console.log('Updated emojis after like:', emojis);
       } else {
         throw new Error(data.error || 'Failed to update likes');
       }

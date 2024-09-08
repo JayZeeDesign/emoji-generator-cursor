@@ -16,15 +16,20 @@ const replicate = new Replicate({
 });
 
 export async function POST(request: Request) {
+  console.log('Received POST request to generate emoji');
   const { userId } = auth();
+  console.log('User ID:', userId);
+
   if (!userId) {
+    console.log('Unauthorized: No user ID');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { prompt } = await request.json();
+  console.log('Prompt:', prompt);
 
   try {
-    // Generate emoji using Replicate
+    console.log('Generating emoji with Replicate');
     const output = await replicate.run(
       "fofr/sdxl-emoji:dee76b5afde21b0f01ed7925f0665b7e879c50ee718c5f78a9d38e04d523cc5e",
       {
@@ -45,6 +50,7 @@ export async function POST(request: Request) {
         }
       }
     ) as ReplicateOutput;
+    console.log('Replicate output:', output);
 
     if (!Array.isArray(output) || typeof output[0] !== 'string') {
       throw new Error('Failed to generate emoji: Unexpected output format');
@@ -59,6 +65,7 @@ export async function POST(request: Request) {
 
     // Upload to Supabase Storage
     const fileName = `${userId}_${Date.now()}.png`;
+    console.log('Uploading to Supabase Storage');
     const { error: uploadError } = await supabase.storage
       .from('emojis')
       .upload(fileName, buffer, {
@@ -70,11 +77,13 @@ export async function POST(request: Request) {
     }
 
     // Get public URL of the uploaded image
+    console.log('Getting public URL');
     const { data: { publicUrl } } = supabase.storage
       .from('emojis')
       .getPublicUrl(fileName);
 
     // Add entry to emojis table
+    console.log('Adding entry to emojis table');
     const { data: emojiData, error: emojiError } = await supabase
       .from('emojis')
       .insert({
@@ -89,9 +98,10 @@ export async function POST(request: Request) {
       throw emojiError;
     }
 
+    console.log('Emoji generated successfully:', emojiData);
     return NextResponse.json({ success: true, emoji: emojiData });
   } catch (error) {
     console.error('Error generating or uploading emoji:', error);
-    return NextResponse.json({ error: 'Failed to generate or upload emoji' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to generate or upload emoji', details: error.message }, { status: 500 });
   }
 }
