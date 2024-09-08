@@ -24,12 +24,14 @@ export default function EmojiGrid() {
 
   const fetchEmojis = useCallback(async () => {
     try {
-      const response = await fetch('/api/emojis');
+      // Add a timestamp as a query parameter
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/emojis?t=${timestamp}`);
       const data = await response.json();
       if (Array.isArray(data.emojis)) {
         // If user is signed in, fetch their likes
         if (isSignedIn && userId) {
-          const likesResponse = await fetch(`/api/user-likes?userId=${userId}`);
+          const likesResponse = await fetch(`/api/user-likes?userId=${userId}&t=${timestamp}`);
           const likesData = await likesResponse.json();
           const likedEmojiIds = new Set(likesData.likes.map((like: { emoji_id: number }) => like.emoji_id));
           

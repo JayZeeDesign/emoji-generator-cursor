@@ -15,7 +15,11 @@ export async function GET() {
 
     if (error) throw error;
 
-    return NextResponse.json({ emojis: data });
+    // Add cache control headers
+    const headers = new Headers();
+    headers.set('Cache-Control', 'no-store, max-age=0');
+
+    return NextResponse.json({ emojis: data }, { headers });
   } catch (error) {
     console.error('Error fetching emojis:', error);
     return NextResponse.json({ error: 'Failed to fetch emojis' }, { status: 500 });
