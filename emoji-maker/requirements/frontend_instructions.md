@@ -72,5 +72,5 @@ EMOJI-MAKER
   └── .gitattributes
 
 # Rules
-- All new components should go in components and be named like example-component.tsx unless otherwise specified
-- All new pages go in app
+- All new components should go in /components and be named like example-component.tsx unless otherwise specified
+- All new pages go in /app

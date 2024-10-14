@@ -44,7 +44,6 @@ export default function EmojiGrid() {
         } else {
           setEmojis(data.emojis.map((emoji: Emoji) => ({ ...emoji, isLiked: false })));
         }
-        console.log('Updated emojis state:', emojis);
       } else {
         console.error('Unexpected data shape:', data);
       }
